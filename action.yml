@@ -1,0 +1,15 @@
+name: GitHub API Request
+description: "Send queries to GitHub's GraphQL API"
+branding:
+  icon: "box"
+  color: gray-dark
+inputs:
+  query:
+    description: "Your GraphQL query, see https://developer.github.com/v4/"
+    required: true
+outputs:
+  data:
+    description: 'The "data" key of the GraphQL response body'
+runs:
+  using: "node12"
+  main: "dist/index.js"
