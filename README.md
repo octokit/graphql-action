@@ -1,8 +1,9 @@
-# THIS IS WORK IN PROGRESS - see [#1](https://github.com/octokit/graphql-action/pull/1)
-
 # Octokit Request Action
 
 > A GitHub Action to send queries to GitHub's GraphQL API
+
+[![Build Status](https://github.com/octokit/core.js/workflows/Test/badge.svg)](https://github.com/octokit/core.js/actions)
+[![Greenkeeper](https://badges.greenkeeper.io/octokit/core.js.svg)](https://greenkeeper.io/)
 
 ## Usage
 
