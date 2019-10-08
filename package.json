@@ -1,0 +1,41 @@
+{
+  "name": "@octokit/graphql-action",
+  "private": true,
+  "version": "0.0.0-development",
+  "description": "A GitHub Action to send queries to GitHub's GraphQL API",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build index.js -o dist"
+  },
+  "repository": "https://github.com/octokit/graphql-action",
+  "keywords": [
+    "github-action"
+  ],
+  "author": "Gregor Martynus (https://twitter.com/gr2m)",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.1.1",
+    "@octokit/action": "^1.0.0"
+  },
+  "devDependencies": {
+    "@semantic-release/git": "^7.0.16",
+    "@zeit/ncc": "^0.20.5",
+    "semantic-release": "^15.13.24"
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "dist/index.js"
+          ],
+          "message": "build(release): compiled action for ${nextRelease.version}\n\n[skip ci]"
+        }
+      ],
+      "@semantic-release/github"
+    ]
+  }
+}
