@@ -1,4 +1,4 @@
-name: GitHub API Request
+name: GitHub GraphQL API Query
 description: "Send queries to GitHub's GraphQL API"
 branding:
   icon: "box"
