@@ -10,7 +10,7 @@
 Minimal example
 
 ```yml
-Name: Log latest release
+name: Log latest release
 on:
   push:
     branches:
@@ -38,7 +38,7 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: "echo latest release: ${{ steps.get_latest_release.outputs.data }}"
+      - run: "echo 'latest release: ${{ steps.get_latest_release.outputs.data }}'"
 ```
 
 To access deep values of `outputs.data`, check out [`gr2m/get-json-paths-action`](https://github.com/gr2m/get-json-paths-action).
