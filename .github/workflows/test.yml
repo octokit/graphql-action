@@ -32,3 +32,31 @@ jobs:
           owner: ${{ github.event.repository.owner.name }}
           repo: ${{ github.event.repository.name }}
       - run: "echo latest release: '${{ steps.get_latest_release.outputs.data }}'"
+      - id: test_with_int_arg
+        uses: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          query: |
+            query pr_commits($pr_number: Int!) {
+              repository(owner: "octokit", name: "graphql-action") {
+                pullRequest(number: $pr_number) {
+                  commits(first: 10) {
+                    edges {
+                      node {
+                        commit {
+                          message
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          pr_number: 1
+      - id: check_int_arg
+        env:
+          JSON_DATA: ${{ steps.test_with_int_arg.outputs.data }}
+        run: |
+          COMMITS_COUNT=$(echo ${JSON_DATA} | jq '.repository.pullRequest.commits[] | length')
+          [[ ${COMMITS_COUNT} -eq 6 ]] && exit 0 || exit 1
