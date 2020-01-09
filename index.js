@@ -34,6 +34,7 @@ function getAllInputs() {
 
     const inputName = key.substr("INPUT_".length).toLowerCase();
     result[inputName] = value;
+    result[inputName] = result[inputName] == parseInt(result[inputName], 10) ? parseInt(result[inputName], 10) : result[inputName];
     return result;
   }, {});
 }
