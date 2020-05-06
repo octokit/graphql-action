@@ -60,3 +60,17 @@ jobs:
         run: |
           COMMITS_COUNT=$(echo ${JSON_DATA} | jq '.repository.pullRequest.commits[] | length')
           [[ ${COMMITS_COUNT} -eq 6 ]] && exit 0 || exit 1
+      - id: test_with_mediaType_previews
+        uses: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          query: |
+            query {
+              repository(owner: "octokit", name: "graphql-action") {
+                packages(first: 1) {
+                  totalCount
+                }
+              }
+            }
+          mediaType: '{"previews": ["packages"]}'
