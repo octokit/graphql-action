@@ -1,5 +1,5 @@
 const { inspect } = require("util");
-
+const yaml = require("js-yaml");
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/action");
 
@@ -32,8 +32,8 @@ function getAllInputs() {
   return Object.entries(process.env).reduce((result, [key, value]) => {
     if (!/^INPUT_/.test(key)) return result;
 
-    const inputName = key.substr("INPUT_".length).toLowerCase();
-    result[inputName] = value;
+    const inputName = key.toLowerCase() === "input_mediatype" ? "mediaType" : key.substr("INPUT_".length).toLowerCase();
+    result[inputName] = yaml.safeLoad(value);
     result[inputName] = result[inputName] == parseInt(result[inputName], 10) ? parseInt(result[inputName], 10) : result[inputName];
     return result;
   }, {});

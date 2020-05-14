@@ -20,6 +20,7 @@
   "devDependencies": {
     "@semantic-release/git": "^9.0.0",
     "@zeit/ncc": "^0.22.0",
+    "js-yaml": "^3.13.1",
     "semantic-release": "^17.0.0"
   },
   "release": {
