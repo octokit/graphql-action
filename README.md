@@ -3,7 +3,6 @@
 > A GitHub Action to send queries to GitHub's GraphQL API
 
 [![Build Status](https://github.com/octokit/graphql-action/workflows/Test/badge.svg)](https://github.com/octokit/graphql-action/actions)
-[![Greenkeeper](https://badges.greenkeeper.io/octokit/graphql-action.svg)](https://greenkeeper.io/)
 
 ## Usage
 
