@@ -37,8 +37,12 @@ function getAllInputs() {
         ? "mediaType"
         : key.substr("INPUT_".length).toLowerCase();
 
-    console.log(inputName);
-    console.log(value);
+    // The js-yaml parser cannot handle the syntax of a multi-line GraphQL query very well,
+    // so we just leave it as-is.
+    // https://github.com/octokit/graphql-action/issues/21
+    if (inputName === `query`) {
+      return result;
+    }
 
     result[inputName] = yaml.safeLoad(value);
     result[inputName] =
