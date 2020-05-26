@@ -32,9 +32,19 @@ function getAllInputs() {
   return Object.entries(process.env).reduce((result, [key, value]) => {
     if (!/^INPUT_/.test(key)) return result;
 
-    const inputName = key.toLowerCase() === "input_mediatype" ? "mediaType" : key.substr("INPUT_".length).toLowerCase();
+    const inputName =
+      key.toLowerCase() === "input_mediatype"
+        ? "mediaType"
+        : key.substr("INPUT_".length).toLowerCase();
+
+    console.log(inputName);
+    console.log(value);
+
     result[inputName] = yaml.safeLoad(value);
-    result[inputName] = result[inputName] == parseInt(result[inputName], 10) ? parseInt(result[inputName], 10) : result[inputName];
+    result[inputName] =
+      result[inputName] == parseInt(result[inputName], 10)
+        ? parseInt(result[inputName], 10)
+        : result[inputName];
     return result;
   }, {});
 }
