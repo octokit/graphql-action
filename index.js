@@ -11,9 +11,6 @@ async function main() {
     const octokit = new Octokit();
     const { query, ...variables } = getAllInputs();
 
-    console.log(`getAllInputs()`);
-    console.log(getAllInputs());
-
     core.info(query);
     for (const [name, value] of Object.entries(variables)) {
       core.info(`> ${name}: ${value}`);
@@ -44,7 +41,7 @@ function getAllInputs() {
     // so we just leave it as-is.
     // https://github.com/octokit/graphql-action/issues/21
     if (inputName === `query`) {
-      result.qurey = value;
+      result.query = value;
       return result;
     }
 
