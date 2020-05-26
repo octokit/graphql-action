@@ -32,9 +32,24 @@ function getAllInputs() {
   return Object.entries(process.env).reduce((result, [key, value]) => {
     if (!/^INPUT_/.test(key)) return result;
 
-    const inputName = key.toLowerCase() === "input_mediatype" ? "mediaType" : key.substr("INPUT_".length).toLowerCase();
+    const inputName =
+      key.toLowerCase() === "input_mediatype"
+        ? "mediaType"
+        : key.substr("INPUT_".length).toLowerCase();
+
+    // The js-yaml parser cannot handle the syntax of a multi-line GraphQL query very well,
+    // so we just leave it as-is.
+    // https://github.com/octokit/graphql-action/issues/21
+    if (inputName === `query`) {
+      result.query = value;
+      return result;
+    }
+
     result[inputName] = yaml.safeLoad(value);
-    result[inputName] = result[inputName] == parseInt(result[inputName], 10) ? parseInt(result[inputName], 10) : result[inputName];
+    result[inputName] =
+      result[inputName] == parseInt(result[inputName], 10)
+        ? parseInt(result[inputName], 10)
+        : result[inputName];
     return result;
   }, {});
 }
