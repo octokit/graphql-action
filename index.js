@@ -11,6 +11,9 @@ async function main() {
     const octokit = new Octokit();
     const { query, ...variables } = getAllInputs();
 
+    console.log(`getAllInputs()`);
+    console.log(getAllInputs());
+
     core.info(query);
     for (const [name, value] of Object.entries(variables)) {
       core.info(`> ${name}: ${value}`);
