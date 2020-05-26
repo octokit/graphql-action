@@ -41,6 +41,7 @@ function getAllInputs() {
     // so we just leave it as-is.
     // https://github.com/octokit/graphql-action/issues/21
     if (inputName === `query`) {
+      result.qurey = value;
       return result;
     }
 
