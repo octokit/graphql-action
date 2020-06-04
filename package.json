@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.1.1",
-    "@octokit/action": "^2.7.1"
+    "@octokit/action": "^2.7.2"
   },
   "devDependencies": {
     "@semantic-release/git": "^9.0.0",
