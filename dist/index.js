@@ -9404,7 +9404,7 @@ var authAction = __webpack_require__(550);
 var pluginPaginateRest = __webpack_require__(299);
 var pluginRestEndpointMethods = __webpack_require__(250);
 
-const VERSION = "3.1.3";
+const VERSION = "3.1.4";
 
 const Octokit = core.Octokit.plugin(pluginPaginateRest.paginateRest, pluginRestEndpointMethods.restEndpointMethods).defaults({
   authStrategy: authAction.createActionAuth,
