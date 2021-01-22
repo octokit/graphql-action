@@ -45,7 +45,7 @@ function getAllInputs() {
       return result;
     }
 
-    result[inputName] = yaml.safeLoad(value);
+    result[inputName] = yaml.load(value);
     result[inputName] =
       result[inputName] == parseInt(result[inputName], 10)
         ? parseInt(result[inputName], 10)
