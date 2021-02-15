@@ -42,7 +42,7 @@ jobs:
       - run: "echo 'latest release: ${{ steps.get_latest_release.outputs.data }}'"
 ```
 
-To access deep values of `outputs.data`, check out [`gr2m/get-json-paths-action`](https://github.com/gr2m/get-json-paths-action).
+To access deep values of `outputs.data`, use [`fromJSON()`](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#fromjson).
 
 ## Debugging
 
@@ -53,7 +53,7 @@ To see additional debug logs, create a secret with the name: `ACTIONS_STEP_DEBUG
 `octokit/graphql-action` is using [`@octokit/graphql`](https://github.com/octokit/graphql.js/) internally with the addition
 that requests are automatically authenticated using the `GITHUB_TOKEN` environment variable. It is required to prevent rate limiting, as all anonymous requests from the same origin count against the same low rate.
 
-The actions sets `data` output to the response data. Note that it is a string, you cannot access any keys of the response at this point. The action also sets `headers` (again, to a JSON string) and `status`.
+The actions sets `data` output to the response data. Note that it is a string, you should use [`fromJSON()`](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#fromjson) to access any value of the response. The action also sets `headers` (again, to a JSON string) and `status`.
 
 ## License
 
