@@ -7,7 +7,7 @@
   "scripts": {
     "build": "ncc build index.js -o dist"
   },
-  "repository": "https://github.com/octokit/graphql-action",
+  "repository": "github:octokit/graphql-action",
   "keywords": [
     "github-action"
   ],
