@@ -1,4 +1,5 @@
-on: [push]
+"on":
+  - push
 name: Test
 jobs:
   readmeExample:
@@ -8,10 +9,10 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v2
         with:
-          node-version: "12.x"
+          node-version: 16
           cache: npm
-      - run: "npm ci"
-      - run: "npm run build"
+      - run: npm ci
+      - run: npm run build
       - uses: ./
         id: get_latest_release
         env:
@@ -58,8 +59,10 @@ jobs:
       - id: check_int_arg
         env:
           JSON_DATA: ${{ steps.test_with_int_arg.outputs.data }}
-        run: |
-          COMMITS_COUNT=$(echo ${JSON_DATA} | jq '.repository.pullRequest.commits[] | length')
+        run: >
+          COMMITS_COUNT=$(echo ${JSON_DATA} | jq
+          '.repository.pullRequest.commits[] | length')
+
           [[ ${COMMITS_COUNT} -eq 6 ]] && exit 0 || exit 1
       - id: test_with_mediaType_previews
         uses: ./
@@ -74,4 +77,4 @@ jobs:
                 }
               }
             }
-          mediaType: '{"previews": ["packages"]}'
+          mediaType: "{\"previews\": [\"packages\"]}"
