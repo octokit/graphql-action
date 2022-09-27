@@ -88,4 +88,4 @@ jobs:
                 }
               }
             }
-          mediaType: "{\"previews\": [\"packages\"]}"
+          mediaType: '{"previews": ["packages"]}'
