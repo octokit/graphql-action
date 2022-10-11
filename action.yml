@@ -11,5 +11,5 @@ outputs:
   data:
     description: 'The "data" key of the GraphQL response body'
 runs:
-  using: "node12"
+  using: "node16"
   main: "dist/index.js"
