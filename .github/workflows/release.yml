@@ -23,4 +23,4 @@ jobs:
           https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           HEAD:refs/heads/v2.x
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.OCTOKITBOT_PAT }}
