@@ -55,6 +55,27 @@ that requests are automatically authenticated using the `GITHUB_TOKEN` environme
 
 The actions sets `data` output to the response data. Note that it is a string, you should use [`fromJSON()`](https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson) to access any value of the response. The action also sets `headers` (again, to a JSON string) and `status`.
 
+## Troubleshooting
+
+### Input variables
+
+It's important to remark `input variables` are converted to lowercase at runtime. This happens with GitHub Actions by design[^1].
+
+### Example
+
+In the following example, the vairable `itemId` is casted to `itemid` so, when trying to use it in the `query`, the execution will fail because of a missing variable: `itemId`
+
+```
+query release($itemId:String!) {
+  ...
+
+itemId: "randomId"
+```
+
+The recommendation[^1] is to use variables in lowercase to avoid this kind of problems.
+
+[^1]: https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+
 ## License
 
 [MIT](LICENSE)
