@@ -63,16 +63,26 @@ It's important to remark `input variables` are converted to lowercase at runtime
 
 ### Example
 
-In the following example, the vairable `itemId` is casted to `itemid` so, when trying to use it in the `query`, the execution will fail because of a missing variable: `itemId`
+In the following example, the variable `itemId` is casted to `itemid` so, when trying to use it in the `query`, the execution will fail because of a missing variable: `itemId`
 
-```
-query release($itemId:String!) {
+```graphql
+query release($itemId: String!) {
   ...
 
+# Fails with "Error: Variable $itemId of type String! was provided invalid value"
 itemId: "randomId"
 ```
 
-The recommendation[^1] is to use variables in lowercase to avoid this kind of problems.
+The recommendation[^1] is to use variables in lowercase to avoid this kind of problems:
+
+```graphql
+# The variable name must be lower-case:
+query release($itemid: String!) {
+  ...
+
+# Both: in the query and action var declaration:
+itemid: "randomId"
+```
 
 [^1]: https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
 
