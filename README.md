@@ -13,7 +13,7 @@ name: Log latest release
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   logLatestRelease:
