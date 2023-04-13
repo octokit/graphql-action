@@ -9,6 +9,8 @@ inputs:
     required: true
   mediaType:
     description: "Enable previews - see https://github.com/octokit/graphql-action/blob/main/README.md#preview-media-types"
+  variables:
+    description: "Variables described in YAML"
 outputs:
   data:
     description: 'The "data" key of the GraphQL response body'
