@@ -55,9 +55,19 @@ that requests are automatically authenticated using the `GITHUB_TOKEN` environme
 
 The actions sets `data` output to the response data. Note that it is a string, you should use [`fromJSON()`](https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson) to access any value of the response. The action also sets `headers` (again, to a JSON string) and `status`.
 
+### Action Input Variables
+
+Input variables can be both for the action, or for the query.
+
+- `query`
+  The GraphQL query to use.
+
+- `previews`
+  A comma-separated list of API previews to accept, e.g. `application/vnd.github.merge-info-preview+json`
+
 ## Troubleshooting
 
-### Input variables
+### Query Input variables
 
 It's important to remark `input variables` are converted to lowercase at runtime. This happens with GitHub Actions by design[^1].
 
