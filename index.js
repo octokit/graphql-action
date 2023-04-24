@@ -9,7 +9,11 @@ async function main() {
   try {
     ``;
     const octokit = new Octokit();
-    const { query, ...variables } = getAllInputs();
+    const {
+      query,
+      previews = "application/vnd.github+json",
+      ...variables
+    } = getAllInputs();
 
     core.info(query);
     for (const [name, value] of Object.entries(variables)) {
@@ -17,7 +21,10 @@ async function main() {
     }
 
     const time = Date.now();
-    const data = await octokit.graphql(query, variables);
+    const data = await octokit.graphql(query, {
+      ...variables,
+      headers: { accept: previews },
+    });
 
     core.info(`< 200 ${Date.now() - time}ms`);
 
@@ -42,6 +49,11 @@ function getAllInputs() {
     // https://github.com/octokit/graphql-action/issues/21
     if (inputName === `query`) {
       result.query = value;
+      return result;
+    }
+
+    if (inputName === `previews`) {
+      result.previews = value;
       return result;
     }
 
