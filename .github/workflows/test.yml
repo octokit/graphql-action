@@ -90,7 +90,7 @@ jobs:
             }
           mediaType: '{"previews": ["packages"]}'
       - run: "echo packages: '${{ steps.test_with_mediaType_previews.outputs.data }}'"
-      - run: "cat $GITHUB_EVENT"
+      - run: cat $GITHUB_EVENT_PATH
       - id: test_with_mediaType_previews_yaml
         uses: ./
         env:
@@ -115,4 +115,4 @@ jobs:
           mediaType: |
             previews:
             - merge-info
-      - run: "echo packages: '${{ steps.test_with_mediaType_preview_yaml.outputs.data }}'"
+      - run: "echo packages: '${{ steps.test_with_mediaType_previews_yaml.outputs.data }}'"
