@@ -7,6 +7,8 @@ inputs:
   query:
     description: "Your GraphQL query, see https://developer.github.com/v4/"
     required: true
+  mediaType:
+    description: "can give a preview value - see documentation or test for example"
 outputs:
   data:
     description: 'The "data" key of the GraphQL response body'
