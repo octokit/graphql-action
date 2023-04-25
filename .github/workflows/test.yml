@@ -97,21 +97,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           query: |
-           query  pullRequest(
-               $repo:String!
-               $owner:String!
-           ) {
-             repository(name:$repo, owner:$owner) { 
-               pullRequests(last:1) {
-               nodes {
-                 number
-                 mergeStateStatus
-               }
-             }
-             }
-           }
-          repo: graphql-action
-          owner: webedx-spark
+            query  pullRequest(
+              $repo:String!
+              $owner:String!) {
+              repository(name:$repo, owner:$owner) { 
+                pullRequests(last:1) {
+                  nodes {
+                    number
+                    mergeStateStatus
+                  }
+                }
+              }
+            }
+          owner: ${{ github.event.repository.owner.name }}
+          repo: ${{ github.event.repository.name }}
           mediaType: |
             previews:
             - merge-info
