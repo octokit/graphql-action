@@ -88,7 +88,5 @@ jobs:
                 }
               }
             }
-          mediaType: |
-            previews: 
-            - packages
+          mediaType: '{"previews": ["packages"]}'
       - run: "echo packages: '${{ steps.test_with_mediaType_previewsoutputs.data }}'"
