@@ -89,3 +89,28 @@ jobs:
               }
             }
           mediaType: '{"previews": ["packages"]}'
+      - run: "echo packages: '${{ steps.test_with_mediaType_previews.outputs.data }}'"
+      - id: test_with_mediaType_previews_yaml
+        uses: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          query: |
+            query  pullRequest(
+              $repo:String!
+              $owner:String!) {
+              repository(name:$repo, owner:$owner) { 
+                pullRequests(last:1) {
+                  nodes {
+                    number
+                    mergeStateStatus
+                  }
+                }
+              }
+            }
+          owner: ${{ github.event.repository.owner.name }}
+          repo: ${{ github.event.repository.name }}
+          mediaType: |
+            previews:
+            - merge-info
+      - run: "echo merge state status: '${{ steps.test_with_mediaType_previews_yaml.outputs.data }}'"
