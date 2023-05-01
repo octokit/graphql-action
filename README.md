@@ -59,28 +59,29 @@ The actions sets `data` output to the response data. Note that it is a string, y
 
 New features of graphql require the use of an Accept header with a preview media-type.
 This is supported with a `mediaType` property, e.g.
+
 ```yml
-    steps:
-      - uses: octokit/graphql-action@v2.x
-        with:
-          query: |
-            query  pullRequest(
-              $repo:String!
-              $owner:String!) {
-              repository(name:$repo, owner:$owner) { 
-                pullRequests(last:1) {
-                  nodes {
-                    number
-                    mergeStateStatus
-                  }
-                }
+steps:
+  - uses: octokit/graphql-action@v2.x
+    with:
+      query: |
+        query  pullRequest(
+          $repo:String!
+          $owner:String!) {
+          repository(name:$repo, owner:$owner) { 
+            pullRequests(last:1) {
+              nodes {
+                number
+                mergeStateStatus
               }
             }
-          owner: ${{ github.event.repository.owner.name }}
-          repo: ${{ github.event.repository.name }}
-          mediaType: |
-            previews:
-            - merge-info
+          }
+        }
+      owner: ${{ github.event.repository.owner.name }}
+      repo: ${{ github.event.repository.name }}
+      mediaType: |
+        previews:
+        - merge-info
 ```
 
 ## Troubleshooting
