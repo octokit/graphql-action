@@ -42,6 +42,31 @@ jobs:
       - run: "echo 'latest release: ${{ steps.get_latest_release.outputs.data }}'"
 ```
 
+You can also use the `variables` parameter to pass variables.
+
+```yml
+- uses: octokit/graphql-action@v2.x
+  with:
+    query: |
+      query release($owner:String!,$repo:String!) {
+        repository(owner:$owner,name:$repo) {
+          releases(first:1) {
+            nodes {
+              name
+              createdAt
+              tagName
+              description
+            }
+          }
+        }
+      }
+    variables: |
+      owner: ${{ github.event.repository.owner.name }}
+      repo: ${{ github.event.repository.name }}
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
 To access deep values of `outputs.data`, use [`fromJSON()`](https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson).
 
 ## Debugging

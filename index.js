@@ -45,6 +45,11 @@ function getAllInputs() {
       return result;
     }
 
+    if (inputName === `variables`) {
+      const variables = yaml.load(value);
+      return { ...result, ...variables };
+    }
+
     result[inputName] = yaml.load(value);
     result[inputName] =
       result[inputName] == parseInt(result[inputName], 10)
