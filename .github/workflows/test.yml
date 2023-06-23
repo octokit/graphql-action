@@ -164,4 +164,5 @@ jobs:
         run: >
           COMMITS_COUNT=$(echo ${JSON_DATA} | jq
           '.repository.pullRequest.commits[] | length')
+          
           [[ ${COMMITS_COUNT} -eq 6 ]] && exit 0 || exit 1
