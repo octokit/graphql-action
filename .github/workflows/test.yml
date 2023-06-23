@@ -162,11 +162,11 @@ jobs:
       - env:
           JSON_DATA: ${{ steps.get_commits_with_variables_parameter.outputs.data }}
         run: >
-          echo "<<<<<<<<<<<<<<<< DEBUG DATA\n"
           echo "${JSON_DATA}"
 
           COMMITS_COUNT=$(echo ${JSON_DATA} | jq
           '.repository.pullRequest.commits[] | length')
 
           echo "${COMMITS_COUNT}"
+
           [[ ${COMMITS_COUNT} -eq 6 ]] && exit 0 || exit 1
