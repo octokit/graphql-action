@@ -160,7 +160,7 @@ jobs:
           variables: |
             pr_number: 1
       - env:
-          JSON_DATA: ${{ steps.get_commits_with_variables_parameter.outputs.data }}
+          JSON_DATA: ${{ steps.get_commits_of_pull_request_with_variables_parameter.outputs.data }}
         run: >
           echo "${JSON_DATA}"
 
