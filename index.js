@@ -2,13 +2,16 @@ const { inspect } = require("util");
 const yaml = require("js-yaml");
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/action");
+const fetch = require("node-fetch");
 
 main();
 
 async function main() {
   try {
     ``;
-    const octokit = new Octokit();
+    const octokit = new Octokit({
+      request: { fetch },
+    });
     const { query, ...variables } = getAllInputs();
 
     core.info(query);
