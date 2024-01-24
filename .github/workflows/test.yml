@@ -1,5 +1,6 @@
-"on":
+on:
   - push
+  - workflow_dispatch
 name: Test
 jobs:
   lint:
