@@ -1946,14 +1946,6 @@ const DecoratorHandler = __nccwpck_require__(1093)
 const RedirectHandler = __nccwpck_require__(7723)
 const createRedirectInterceptor = __nccwpck_require__(8886)
 
-let hasCrypto
-try {
-  __nccwpck_require__(6113)
-  hasCrypto = true
-} catch {
-  hasCrypto = false
-}
-
 Object.assign(Dispatcher.prototype, api)
 
 module.exports.Dispatcher = Dispatcher
@@ -2027,14 +2019,10 @@ function makeDispatcher (fn) {
 module.exports.setGlobalDispatcher = setGlobalDispatcher
 module.exports.getGlobalDispatcher = getGlobalDispatcher
 
-let fetchImpl = null
-module.exports.fetch = async function fetch (resource) {
-  if (!fetchImpl) {
-    fetchImpl = (__nccwpck_require__(5272).fetch)
-  }
-
+const fetchImpl = (__nccwpck_require__(5272).fetch)
+module.exports.fetch = async function fetch (init, options = undefined) {
   try {
-    return await fetchImpl(...arguments)
+    return await fetchImpl(init, options)
   } catch (err) {
     if (typeof err === 'object') {
       Error.captureStackTrace(err, this)
@@ -2074,11 +2062,7 @@ const { parseMIMEType, serializeAMimeType } = __nccwpck_require__(3633)
 module.exports.parseMIMEType = parseMIMEType
 module.exports.serializeAMimeType = serializeAMimeType
 
-if (hasCrypto) {
-  const { WebSocket } = __nccwpck_require__(4082)
-
-  module.exports.WebSocket = WebSocket
-}
+module.exports.WebSocket = __nccwpck_require__(4082).WebSocket
 
 module.exports.request = makeDispatcher(api.request)
 module.exports.stream = makeDispatcher(api.stream)
@@ -3817,8 +3801,9 @@ const { kEnumerableProperty, isDisturbed } = __nccwpck_require__(6766)
 const { kHeadersList } = __nccwpck_require__(3734)
 const { webidl } = __nccwpck_require__(1703)
 const { Response, cloneResponse } = __nccwpck_require__(6464)
-const { Request } = __nccwpck_require__(4381)
-const { kState, kHeaders, kGuard, kRealm } = __nccwpck_require__(8180)
+const { Request, fromInnerRequest } = __nccwpck_require__(4381)
+const { Headers } = __nccwpck_require__(9738)
+const { kState, kHeaders, kGuard } = __nccwpck_require__(8180)
 const { fetching } = __nccwpck_require__(5272)
 const { urlIsHttpHttpsScheme, createDeferredPromise, readAllBytes } = __nccwpck_require__(2805)
 const assert = __nccwpck_require__(9491)
@@ -3860,7 +3845,7 @@ class Cache {
     request = webidl.converters.RequestInfo(request)
     options = webidl.converters.CacheQueryOptions(options)
 
-    const p = await this.matchAll(request, options)
+    const p = this.#internalMatchAll(request, options, 1)
 
     if (p.length === 0) {
       return
@@ -3875,64 +3860,7 @@ class Cache {
     if (request !== undefined) request = webidl.converters.RequestInfo(request)
     options = webidl.converters.CacheQueryOptions(options)
 
-    // 1.
-    let r = null
-
-    // 2.
-    if (request !== undefined) {
-      if (request instanceof Request) {
-        // 2.1.1
-        r = request[kState]
-
-        // 2.1.2
-        if (r.method !== 'GET' && !options.ignoreMethod) {
-          return []
-        }
-      } else if (typeof request === 'string') {
-        // 2.2.1
-        r = new Request(request)[kState]
-      }
-    }
-
-    // 5.
-    // 5.1
-    const responses = []
-
-    // 5.2
-    if (request === undefined) {
-      // 5.2.1
-      for (const requestResponse of this.#relevantRequestResponseList) {
-        responses.push(requestResponse[1])
-      }
-    } else { // 5.3
-      // 5.3.1
-      const requestResponses = this.#queryCache(r, options)
-
-      // 5.3.2
-      for (const requestResponse of requestResponses) {
-        responses.push(requestResponse[1])
-      }
-    }
-
-    // 5.4
-    // We don't implement CORs so we don't need to loop over the responses, yay!
-
-    // 5.5.1
-    const responseList = []
-
-    // 5.5.2
-    for (const response of responses) {
-      // 5.5.2.1
-      const responseObject = new Response(null)
-      responseObject[kState] = response
-      responseObject[kHeaders][kHeadersList] = response.headersList
-      responseObject[kHeaders][kGuard] = 'immutable'
-
-      responseList.push(responseObject.clone())
-    }
-
-    // 6.
-    return Object.freeze(responseList)
+    return this.#internalMatchAll(request, options)
   }
 
   async add (request) {
@@ -4311,7 +4239,7 @@ class Cache {
    * @see https://w3c.github.io/ServiceWorker/#dom-cache-keys
    * @param {any} request
    * @param {import('../../types/cache').CacheQueryOptions} options
-   * @returns {readonly Request[]}
+   * @returns {Promise<readonly Request[]>}
    */
   async keys (request = undefined, options = {}) {
     webidl.brandCheck(this, Cache)
@@ -4370,12 +4298,12 @@ class Cache {
 
       // 5.4.2
       for (const request of requests) {
-        const requestObject = new Request('https://a')
-        requestObject[kState] = request
-        requestObject[kHeaders][kHeadersList] = request.headersList
-        requestObject[kHeaders][kGuard] = 'immutable'
-        requestObject[kRealm] = request.client
-
+        const requestObject = fromInnerRequest(
+          request,
+          new AbortController().signal,
+          'immutable',
+          { settingsObject: request.client }
+        )
         // 5.4.2.1
         requestList.push(requestObject)
       }
@@ -4600,6 +4528,72 @@ class Cache {
 
     return true
   }
+
+  #internalMatchAll (request, options, maxResponses = Infinity) {
+    // 1.
+    let r = null
+
+    // 2.
+    if (request !== undefined) {
+      if (request instanceof Request) {
+        // 2.1.1
+        r = request[kState]
+
+        // 2.1.2
+        if (r.method !== 'GET' && !options.ignoreMethod) {
+          return []
+        }
+      } else if (typeof request === 'string') {
+        // 2.2.1
+        r = new Request(request)[kState]
+      }
+    }
+
+    // 5.
+    // 5.1
+    const responses = []
+
+    // 5.2
+    if (request === undefined) {
+      // 5.2.1
+      for (const requestResponse of this.#relevantRequestResponseList) {
+        responses.push(requestResponse[1])
+      }
+    } else { // 5.3
+      // 5.3.1
+      const requestResponses = this.#queryCache(r, options)
+
+      // 5.3.2
+      for (const requestResponse of requestResponses) {
+        responses.push(requestResponse[1])
+      }
+    }
+
+    // 5.4
+    // We don't implement CORs so we don't need to loop over the responses, yay!
+
+    // 5.5.1
+    const responseList = []
+
+    // 5.5.2
+    for (const response of responses) {
+      // 5.5.2.1
+      const responseObject = new Response(kConstruct)
+      responseObject[kState] = response
+      responseObject[kHeaders] = new Headers(kConstruct)
+      responseObject[kHeaders][kHeadersList] = response.headersList
+      responseObject[kHeaders][kGuard] = 'immutable'
+
+      responseList.push(responseObject.clone())
+
+      if (responseList.length >= maxResponses) {
+        break
+      }
+    }
+
+    // 6.
+    return Object.freeze(responseList)
+  }
 }
 
 Object.defineProperties(Cache.prototype, {
@@ -4777,7 +4771,7 @@ class CacheStorage {
 
   /**
    * @see https://w3c.github.io/ServiceWorker/#cache-storage-keys
-   * @returns {string[]}
+   * @returns {Promise<string[]>}
    */
   async keys () {
     webidl.brandCheck(this, CacheStorage)
@@ -6654,7 +6648,7 @@ function writeH2 (client, session, request) {
 
   session.ref()
 
-  const shouldEndStream = method === 'GET' || method === 'HEAD'
+  const shouldEndStream = method === 'GET' || method === 'HEAD' || body === null
   if (expectContinue) {
     headers[HTTP2_HEADER_EXPECT] = '100-continue'
     stream = session.request(headers, { endStream: shouldEndStream, signal })
@@ -9864,14 +9858,8 @@ function validateHandler (handler, method, upgrade) {
 // A body is disturbed if it has been read from and it cannot
 // be re-used without losing state or data.
 function isDisturbed (body) {
-  return !!(body && (
-    stream.isDisturbed
-      ? stream.isDisturbed(body) || body[kBodyUsed] // TODO (fix): Why is body[kBodyUsed] needed?
-      : body[kBodyUsed] ||
-        body.readableDidRead ||
-        (body._readableState && body._readableState.dataEmitted) ||
-        isReadableAborted(body)
-  ))
+  // TODO (fix): Why is body[kBodyUsed] needed?
+  return !!(body && (stream.isDisturbed(body) || body[kBodyUsed]))
 }
 
 function isErrored (body) {
@@ -13112,7 +13100,7 @@ class Fetch extends EE {
 }
 
 // https://fetch.spec.whatwg.org/#fetch-method
-function fetch (input, init = {}) {
+function fetch (input, init = undefined) {
   webidl.argumentLengthCheck(arguments, 1, { header: 'globalThis.fetch' })
 
   // 1. Let p be a new promise.
@@ -13238,7 +13226,7 @@ function fetch (input, init = {}) {
     request,
     processResponseEndOfBody: handleFetchDone,
     processResponse,
-    dispatcher: init.dispatcher ?? getGlobalDispatcher() // undici
+    dispatcher: init?.dispatcher ?? getGlobalDispatcher() // undici
   })
 
   // 14. Return p.
@@ -13317,13 +13305,6 @@ function markResourceTiming (timingInfo, originalURL, initiatorType, globalThis,
 
 // https://fetch.spec.whatwg.org/#abort-fetch
 function abortFetch (p, request, responseObject, error) {
-  // Note: AbortSignal.reason was added in node v17.2.0
-  // which would give us an undefined error to reject with.
-  // Remove this once node v16 is no longer supported.
-  if (!error) {
-    error = new DOMException('The operation was aborted.', 'AbortError')
-  }
-
   // 1. Reject promise with error.
   p.reject(error)
 
@@ -16039,14 +16020,6 @@ class Request {
 
     // 3. Let clonedRequestObject be the result of creating a Request object,
     // given clonedRequest, this’s headers’s guard, and this’s relevant Realm.
-    const clonedRequestObject = new Request(kConstruct)
-    clonedRequestObject[kState] = clonedRequest
-    clonedRequestObject[kRealm] = this[kRealm]
-    clonedRequestObject[kHeaders] = new Headers(kConstruct)
-    clonedRequestObject[kHeaders][kHeadersList] = clonedRequest.headersList
-    clonedRequestObject[kHeaders][kGuard] = this[kHeaders][kGuard]
-    clonedRequestObject[kHeaders][kRealm] = this[kHeaders][kRealm]
-
     // 4. Make clonedRequestObject’s signal follow this’s signal.
     const ac = new AbortController()
     if (this.signal.aborted) {
@@ -16059,10 +16032,9 @@ class Request {
         }
       )
     }
-    clonedRequestObject[kSignal] = ac.signal
 
     // 4. Return clonedRequestObject.
-    return clonedRequestObject
+    return fromInnerRequest(clonedRequest, ac.signal, this[kHeaders][kGuard], this[kRealm])
   }
 }
 
@@ -16130,6 +16102,26 @@ function cloneRequest (request) {
 
   // 3. Return newRequest.
   return newRequest
+}
+
+/**
+ * @param {any} innerRequest
+ * @param {AbortSignal} signal
+ * @param {'request' | 'immutable' | 'request-no-cors' | 'response' | 'none'} guard
+ * @param {any} [realm]
+ * @returns {Request}
+ */
+function fromInnerRequest (innerRequest, signal, guard, realm) {
+  const request = new Request(kConstruct)
+  request[kState] = innerRequest
+  request[kRealm] = realm
+  request[kSignal] = signal
+  request[kSignal][kRealm] = realm
+  request[kHeaders] = new Headers(kConstruct)
+  request[kHeaders][kHeadersList] = innerRequest.headersList
+  request[kHeaders][kGuard] = guard
+  request[kHeaders][kRealm] = realm
+  return request
 }
 
 Object.defineProperties(Request.prototype, {
@@ -16258,7 +16250,7 @@ webidl.converters.RequestInit = webidl.dictionaryConverter([
   }
 ])
 
-module.exports = { Request, makeRequest }
+module.exports = { Request, makeRequest, fromInnerRequest }
 
 
 /***/ }),
@@ -20037,6 +20029,7 @@ class RedirectHandler {
     this.maxRedirections = maxRedirections
     this.handler = handler
     this.history = []
+    this.redirectionLimitReached = false
 
     if (util.isStream(this.opts.body)) {
       // TODO (fix): Provide some way for the user to cache the file to e.g. /tmp
@@ -20089,6 +20082,16 @@ class RedirectHandler {
     this.location = this.history.length >= this.maxRedirections || util.isDisturbed(this.opts.body)
       ? null
       : parseLocation(statusCode, headers)
+
+    if (this.opts.throwOnMaxRedirect && this.history.length >= this.maxRedirections) {
+      if (this.request) {
+        this.request.abort(new Error('max redirects'))
+      }
+
+      this.redirectionLimitReached = true
+      this.abort(new Error('max redirects'))
+      return
+    }
 
     if (this.opts.origin) {
       this.history.push(new URL(this.opts.path, this.opts.origin))
@@ -21692,11 +21695,21 @@ function buildKey (opts) {
 }
 
 function generateKeyValues (data) {
-  return Object.entries(data).reduce((keyValuePairs, [key, value]) => [
-    ...keyValuePairs,
-    Buffer.from(`${key}`),
-    Array.isArray(value) ? value.map(x => Buffer.from(`${x}`)) : Buffer.from(`${value}`)
-  ], [])
+  const keys = Object.keys(data)
+  const result = []
+  for (let i = 0; i < keys.length; ++i) {
+    const key = keys[i]
+    const value = data[key]
+    const name = Buffer.from(`${key}`)
+    if (Array.isArray(value)) {
+      for (let j = 0; j < value.length; ++j) {
+        result.push(name, Buffer.from(`${value[j]}`))
+      }
+    } else {
+      result.push(name, Buffer.from(`${value}`))
+    }
+  }
+  return result
 }
 
 /**
