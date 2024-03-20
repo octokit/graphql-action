@@ -17,11 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@octokit/action": "^6.0.5"
+    "@octokit/action": "^6.0.7"
   },
   "devDependencies": {
     "@semantic-release/git": "^10.0.0",
-    "@vercel/ncc": "^0.38.0",
+    "@vercel/ncc": "^0.38.1",
     "js-yaml": "^4.0.0",
     "prettier": "^3.0.0",
     "semantic-release": "^23.0.0"
