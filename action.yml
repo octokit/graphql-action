@@ -15,5 +15,5 @@ outputs:
   data:
     description: 'The "data" key of the GraphQL response body'
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.cjs"
