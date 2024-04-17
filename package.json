@@ -4,6 +4,9 @@
   "version": "0.0.0-development",
   "description": "A GitHub Action to send queries to GitHub's GraphQL API",
   "main": "dist/index.js",
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
     "build": "ncc build index.js -o dist",
     "lint": "prettier --check *.js **/*.{md,yml} package.json",
