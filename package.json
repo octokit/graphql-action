@@ -5,7 +5,7 @@
   "description": "A GitHub Action to send queries to GitHub's GraphQL API",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build index.js -o dist",
+    "build": "esbuild index.js --bundle --outdir=dist --out-extension:.js=.cjs --platform=node --target=node20.0.0",
     "lint": "prettier --check *.js **/*.{md,yml} package.json",
     "lint:fix": "prettier --write *.js **/*.{md,yml} package.json"
   },
@@ -17,11 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@octokit/action": "^6.0.7"
+    "@octokit/action": "^6.1.0"
   },
   "devDependencies": {
     "@semantic-release/git": "^10.0.0",
-    "@vercel/ncc": "^0.38.1",
+    "esbuild": "^0.20.2",
     "js-yaml": "^4.0.0",
     "prettier": "^3.0.0",
     "semantic-release": "^23.0.0"
