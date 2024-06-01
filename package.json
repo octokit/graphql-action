@@ -27,7 +27,7 @@
     "@vercel/ncc": "^0.38.0",
     "js-yaml": "^4.0.0",
     "prettier": "^3.0.0",
-    "semantic-release": "^23.0.0"
+    "semantic-release": "^24.0.0"
   },
   "release": {
     "branches": [
