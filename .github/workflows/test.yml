@@ -47,7 +47,7 @@ jobs:
           repo: ${{ github.event.repository.name }}
       - run: "echo latest release: '${{ steps.get_latest_release.outputs.data }}'"
       - id: test_with_int_arg
-        uses: ./
+        uses: ./dist/index.cjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -92,7 +92,7 @@ jobs:
           mediaType: '{"previews": ["packages"]}'
       - run: "echo packages: '${{ steps.test_with_mediaType_previews.outputs.data }}'"
       - id: test_with_mediaType_previews_yaml
-        uses: ./
+        uses: ./dist/index.cjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -115,7 +115,7 @@ jobs:
             previews:
             - merge-info
       - run: "echo merge state status: '${{ steps.test_with_mediaType_previews_yaml.outputs.data }}'"
-      - uses: ./
+      - uses: ./dist/index.cjs
         id: get_latest_release_with_variables_parameter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,7 +138,7 @@ jobs:
             repo: ${{ github.event.repository.name }}
       - run: "echo latest release: '${{ steps.get_latest_release_with_variables_parameter.outputs.data }}'"
       - id: get_commits_of_pull_request_with_variables_parameter
-        uses: ./
+        uses: ./dist/index.cjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
