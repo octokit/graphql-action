@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0-development",
   "description": "A GitHub Action to send queries to GitHub's GraphQL API",
+  "type": "commonjs",
   "main": "dist/index.cjs",
   "engines": {
     "node": ">=18"
