@@ -3,13 +3,13 @@
   "private": true,
   "version": "0.0.0-development",
   "description": "A GitHub Action to send queries to GitHub's GraphQL API",
-  "type": "commonjs",
-  "main": "dist/index.cjs",
+  "type": "module",
+  "main": "dist/index.js",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
-    "build": "esbuild index.js --bundle --outdir=dist --out-extension:.js=.cjs --platform=node --target=node24.0.0",
+    "build": "esbuild index.js --bundle --outdir=dist --platform=node --format=esm --target=node24.0.0",
     "lint": "prettier --check *.js **/*.{md,yml} package.json",
     "lint:fix": "prettier --write *.js **/*.{md,yml} package.json"
   },
@@ -27,8 +27,7 @@
     "@semantic-release/git": "^10.0.0",
     "esbuild": "^0.25.12",
     "js-yaml": "^4.0.0",
-    "prettier": "^3.0.0",
-    "semantic-release": "^24.0.0"
+    "prettier": "^3.6.2"
   },
   "release": {
     "branches": [
