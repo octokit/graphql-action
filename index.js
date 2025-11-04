@@ -1,7 +1,7 @@
-const { inspect } = require("util");
-const yaml = require("js-yaml");
-const core = require("@actions/core");
-const { Octokit } = require("@octokit/action");
+import { inspect } from "node:util";
+import { load } from "js-yaml";
+import { info, setOutput, debug, setFailed } from "@actions/core";
+import { Octokit } from "@octokit/action";
 
 main();
 
@@ -11,20 +11,20 @@ async function main() {
     const octokit = new Octokit();
     const { query, ...variables } = getAllInputs();
 
-    core.info(query);
+    info(query);
     for (const [name, value] of Object.entries(variables)) {
-      core.info(`> ${name}: ${value}`);
+      info(`> ${name}: ${value}`);
     }
 
     const time = Date.now();
     const data = await octokit.graphql(query, variables);
 
-    core.info(`< 200 ${Date.now() - time}ms`);
+    info(`< 200 ${Date.now() - time}ms`);
 
-    core.setOutput("data", JSON.stringify(data, null, 2));
+    setOutput("data", JSON.stringify(data, null, 2));
   } catch (error) {
-    core.debug(inspect(error));
-    core.setFailed(error.message);
+    debug(inspect(error));
+    setFailed(error.message);
   }
 }
 
@@ -46,11 +46,11 @@ function getAllInputs() {
     }
 
     if (inputName === `variables`) {
-      const variables = yaml.load(value);
+      const variables = load(value);
       return { ...result, ...variables };
     }
 
-    result[inputName] = yaml.load(value);
+    result[inputName] = load(value);
     result[inputName] =
       result[inputName] == parseInt(result[inputName], 10)
         ? parseInt(result[inputName], 10)
