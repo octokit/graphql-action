@@ -4,12 +4,14 @@
   "version": "0.0.0-development",
   "description": "A GitHub Action to send queries to GitHub's GraphQL API",
   "type": "module",
-  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "build": "esbuild index.js --bundle --outdir=dist --platform=node --format=esm --target=node24.0.0",
+    "build": "rollup --config rollup.config.js",
     "lint": "prettier --check *.js **/*.{md,yml} package.json",
     "lint:fix": "prettier --write *.js **/*.{md,yml} package.json"
   },
@@ -24,10 +26,12 @@
     "@octokit/action": "^8.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.8",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@semantic-release/git": "^10.0.0",
-    "esbuild": "^0.25.12",
     "js-yaml": "^4.0.0",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "rollup": "^4.52.5"
   },
   "release": {
     "branches": [
