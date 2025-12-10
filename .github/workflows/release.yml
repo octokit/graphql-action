@@ -15,6 +15,11 @@ jobs:
     name: release
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ vars.OCTOKIT_APP_ID }}
+          private-key: ${{ secrets.OCTOKIT_APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -24,10 +29,10 @@ jobs:
       - run: npm run build
       - run: npx semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.OCTOKITBOT_PAT }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       - run: >-
           git push
           https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           HEAD:refs/heads/v2.x
         env:
-          GITHUB_TOKEN: ${{ secrets.OCTOKITBOT_PAT }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
