@@ -31,7 +31,7 @@
   },
   "release": {
     "branches": [
-      "v+([0-9]).x",
+      "v2.x",
       "main",
       "next",
       {
